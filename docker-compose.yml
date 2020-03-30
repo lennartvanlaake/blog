@@ -1,0 +1,36 @@
+version: '3.7'
+
+services:
+  frontend:
+    build: ./blog_frontend
+    volumes:
+      - ./blog_frontend/:/usr/app
+    depends_on:
+      - django
+
+  django:
+    build: ./blog_python
+    volumes:
+      - ./blog_python/:/code/
+    depends_on:
+      - db
+
+  nginx:
+    build: ./nginx
+    ports:
+      - 1080:80
+    depends_on:
+      - django
+      - frontend
+        
+  db:
+    image: postgres:latest
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_USER=django
+      - POSTGRES_PASSWORD=django
+      - POSTGRES_DB=django
+
+volumes:
+  postgres_data:
